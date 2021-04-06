@@ -9,6 +9,9 @@
 import UIKit
 import Photos
 
+extension Notification.Name {
+    static let loadedPhotosFromCameraRoll = Notification.Name("loadedPhotosFromCameraRoll")
+}
 
 final class Model {
     
@@ -63,7 +66,8 @@ final class Model {
                 if (status == PHAuthorizationStatus.authorized) {
                     DispatchQueue.main.async {
                         self.loadCollection()
-                        //FIXME!! send a notification that we now have some data. only needed for first time
+                        //send a notification that we now have some data. only needed for first time
+                        NotificationCenter.default.post(name: .loadedPhotosFromCameraRoll, object: nil)
                     }
                 } else {
                     // Access has been denied. Oh, well ...

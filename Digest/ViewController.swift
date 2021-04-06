@@ -23,6 +23,10 @@ enum SectionType: Int, Decodable {
     case Scroller
 }
 
+private extension Selector {
+    static let onLoadedPhotosFromCameraRoll = #selector(DigestViewController.onLoadedPhotosFromCameraRoll)
+}
+
 
 final class DigestViewController: UIViewController {
     
@@ -36,11 +40,19 @@ final class DigestViewController: UIViewController {
         super.viewDidLoad()
         
         navigationItem.title = "Digest"
-        let _ = Model.sharedInstance        // load photos
+        // if nothing in the asset collection probably haven't asked user for permission
+        // set callback for after user gives access to photos
+        if Model.sharedInstance.assetCollection == nil {
+            NotificationCenter.default.addObserver(self, selector: .onLoadedPhotosFromCameraRoll, name: .loadedPhotosFromCameraRoll, object: nil)
+        }
         initializeCollectionVew()
         configureDataSource()
     }
 
+    // user allowed access to photos so load them into our views
+    @objc func onLoadedPhotosFromCameraRoll(_ notification: Notification) {
+        self.configureDataSource()
+    }
 }
 
 
